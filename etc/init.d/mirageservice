@@ -85,7 +85,7 @@ echo "Mirage Service não pode ser parado, por favor veja $dir_manager/Logs/mira
 exit 1
 else
 echo "Mirage Service script for Linux parado com sucesso"
-# exit 1
+# exit 0
 fi
 }
 # See how we were called.

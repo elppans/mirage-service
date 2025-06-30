@@ -40,21 +40,22 @@ verificar_e_atuar() {
         # echo "Arquivo $PID_FILE encontrado."
         if verificar_processo_ativo; then
             echo "Processo $PROCESS_NAME está ativo."
+	    stop
         else
             echo "Processo $PROCESS_NAME NÃO está ativo."
             remover_pid_file
         fi
-    # else
-        # echo "Arquivo $PID_FILE não encontrado."
+     else
+         # echo "Arquivo $PID_FILE não encontrado."
+        if verificar_processo_ativo; then
+            echo "Processo $PROCESS_NAME está ativo."
+	    stop
+        fi
     fi
 }
 
 start()
 {
-
-# Executa a função para verificar PID Mirage
-verificar_e_atuar
-
 echo $"Iniciando Mirage Service: "
 cd $dir_manager
 #/usr/bin/nohup "sudo -u zanthus -g zanthus /usr/local/bin/php -f servico/servicolinux.php5 start" >> /dev/null
@@ -81,18 +82,22 @@ sleep 1
 if [ -e "$PID_FILE" ]
 then
 echo "Mirage Service não pode ser parado, por favor veja $dir_manager/Logs/mirage_service.log"
-exit 0
+exit 1
 else
 echo "Mirage Service script for Linux parado com sucesso"
-exit 1
+# exit 1
 fi
 }
 # See how we were called.
 case "$1" in
 start)
+# Executa a função para verificar PID Mirage
+verificar_e_atuar
+# Iniciar o Mirage
 start
 ;;
 stop)
+# Parar o Mirage
 stop
 ;;
 restart|reload)

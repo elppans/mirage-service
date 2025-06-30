@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+# postgresql    This is the init script for starting up the PostgreSQL
+#               server.
+#
+# chkconfig: - 64 36
+# description: PostgreSQL database server.
+# processname: postmaster
+# pidfile="/var/run/${NAME}.pid"
+
+case "$1" in
+  start)
+	/usr/bin/mirage-min &
+	;;
+  stop)
+	pkill mirage-min
+	;;
+  *)
+	echo $"Usage: $0 {start|stop}"
+	exit 2
+	;;
+esac
+
+

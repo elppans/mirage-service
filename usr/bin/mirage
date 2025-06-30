@@ -1,0 +1,60 @@
+#!/bin/bash
+
+dir_php=/usr/local/apache2/cgi-bin
+dir_servico=/usr/local/apache2/htdocs/manager/servico
+MSRV=/usr/local/apache2/htdocs/manager/servico/mirageservicephp.pid
+MSRVT=/tmp/mirageservicephp.pid
+MSSH=mirageservice.sh
+
+case "$*" in
+        -[Hh]|--[Hh][Ee][Ll][Pp])
+echo -e "Comando para gerenciar o serviço do Mirage:
+
+ Opções:
+        start           Inicia o serviço mirage
+        stop            Para o serviço mirage
+        status          mostra se o mirage está ativo
+"
+                exit 0
+ ;;
+        status)
+ if [ -e "$MSRV" ]; then
+        echo "Serviço mirage ativo!"
+        exit 0
+elif [ -e "$MSRVT" ]; then
+        echo "Serviço mirage ativo!"
+        exit 0
+  else
+        echo "Serviço mirage INativo!"
+        exit 0
+fi
+
+;;
+        start)
+##cd /usr/local/apache2/htdocs/manager/servico
+##./"$MSSH" start
+
+#cd "$dir_php"
+#php $dir_servico/servicolinux.php5
+
+systemctl start mirage.service
+"$0" status
+
+;;
+        stop)
+##cd /usr/local/apache2/htdocs/manager/servico
+##./"$MSSH" stop
+
+#cd "$dir_php"
+#php $dir_servico/servicolinux.php5 stop
+systemctl stop mirage.service
+"$0" status
+
+;;
+        *)
+        "$0" --help
+        ;;
+esac
+
+
+

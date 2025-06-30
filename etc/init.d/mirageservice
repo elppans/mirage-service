@@ -1,0 +1,107 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:             mirage
+# Required-Start:       $ALL
+# Required-Stop:
+# Default-Start:        2 3 5
+# Default-Stop:         0 1 4 6
+# Description:          Mirage Zanthus
+### END INIT INFO
+
+
+if [ -f /etc/rc.d/functions ];
+then
+. /etc/init.d/functions
+fi
+
+# 
+echo "** Mirage Service PHP **\n";
+dir_manager=/usr/local/apache2/htdocs/manager
+
+PID_FILE="$dir_manager/servico/mirageservicephp.pid"
+PROCESS_NAME="servicolinux.php5"
+
+verificar_pid_file() {
+    [ -f "$PID_FILE" ]
+}
+
+verificar_processo_ativo() {
+    pgrep -f "$PROCESS_NAME" > /dev/null
+}
+
+remover_pid_file() {
+    echo "Removendo $PID_FILE..."
+    rm -f "$PID_FILE"
+}
+
+verificar_e_atuar() {
+    if verificar_pid_file; then
+        # echo "Arquivo $PID_FILE encontrado."
+        if verificar_processo_ativo; then
+            echo "Processo $PROCESS_NAME está ativo."
+        else
+            echo "Processo $PROCESS_NAME NÃO está ativo."
+            remover_pid_file
+        fi
+    # else
+        # echo "Arquivo $PID_FILE não encontrado."
+    fi
+}
+
+start()
+{
+
+# Executa a função para verificar PID Mirage
+verificar_e_atuar
+
+echo $"Iniciando Mirage Service: "
+cd $dir_manager
+#/usr/bin/nohup "sudo -u zanthus -g zanthus /usr/local/bin/php -f servico/servicolinux.php5 start" >> /dev/null
+/usr/bin/nohup /usr/local/bin/php -f servico/servicolinux.php5 start &>> /dev/null
+sleep 1
+if [ -e "$PID_FILE" ]
+then
+echo "Mirage Service script for Linux iniciado com sucesso"
+exit 0
+else
+echo "Mirage Service não pode ser iniciado, por favor veja $dir_manager/Logs/mirage_service.log"
+exit 1
+fi
+}
+
+stop()
+{
+echo $"Parando Mirage Service : "
+cd $dir_manager
+/usr/local/bin/php -f servico/servicolinux.php5 stop
+sleep 1
+kill -9 `ps ax | grep servicolinux | grep -v grep | awk '{print $1}'` &>>/dev/null
+sleep 1
+if [ -e "$PID_FILE" ]
+then
+echo "Mirage Service não pode ser parado, por favor veja $dir_manager/Logs/mirage_service.log"
+exit 0
+else
+echo "Mirage Service script for Linux parado com sucesso"
+exit 1
+fi
+}
+# See how we were called.
+case "$1" in
+start)
+start
+;;
+stop)
+stop
+;;
+restart|reload)
+stop
+sleep 3
+start
+;;
+*)
+echo $"Opção inválida. Tente {start|stop|restart|}"
+exit 1
+esac
+

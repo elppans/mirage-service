@@ -1,0 +1,55 @@
+#!/bin/bash
+
+#MIRAGESERVICEPID(){
+
+MFPID="/usr/local/apache2/htdocs/manager/servico/mirageservicephp.pid"
+MPPID=`pgrep -a php | grep servicolinux | awk '{print $1}'`
+
+export MFPID
+export MPPID
+
+
+
+if [ -e "$MFPID" ]; then
+        CMFPID=`cat "$MFPID"`
+        export CMFPID
+  else
+        CMFPID="0"
+fi
+#echo "MFPID: $MFPID"
+#echo "MPPID: $MPPID"
+#echo "CMFPID: $CMFPID"
+
+if [ "$CMFPID" == "0" ]; then
+        systemctl start mirage.service
+        CMFPID=`cat "$MFPID"`
+MPPID=`pgrep -a php | grep servicolinux | awk '{print $1}'`
+        export CMFPID
+        export MPPID
+        #echo "1: $CMFPID"
+        #echo "2: $MPPID"
+        echo " "
+fi
+
+if [ ! "$CMFPID" == "$MPPID" ]; then
+        echo "$CMFPID" | tee /tmp/mirpid
+        echo "$MPPID" | tee -a /tmp/mirpid
+        kill -9 `cat /tmp/mirpid` >> /dev/null
+        rm -rf /tmp/mirpid
+        rm -rf "$MFPID"
+        systemctl restart mirage.service
+        pgrep -a php | grep servicolinux | awk '{print $1}'
+        read -t 1
+        #clear
+
+fi
+
+if [ "$CMFPID" == "0" ]; then
+       mirage start
+       #"$MPPID"
+fi
+
+#MIRAGESERVICEPID
+#}
+#MIRAGESERVICEPID
+

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+MIRAGESERVICEPID(){
+sleep 59
+nohup /usr/bin/mirage-pid &>/dev/null
+echo "OK"
+
+MIRAGESERVICEPID
+}
+MIRAGESERVICEPID
+

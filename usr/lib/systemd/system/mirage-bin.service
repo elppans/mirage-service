@@ -1,0 +1,18 @@
+[Unit]
+Description=Mirage Service
+After=network.target
+After=remote-fs.target 
+After=nss-lookup.target
+#StartLimitIntervalSec=0
+
+[Service]
+PIDFile=/usr/local/apache22/htdocs/manager/servico/mirageservicephp.pid
+Type=forking
+Restart=always
+RestartSec=1s
+User=zanthus
+ExecStart=/usr/bin/mirageservice start
+ExecStop=/usr/bin/mirageservice stop
+
+[Install]
+WantedBy=multi-user.target

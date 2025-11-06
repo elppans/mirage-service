@@ -1,0 +1,81 @@
+#!/bin/bash
+# Versão anterior do comando mirageservice
+# Versão maior é o que está em init.d
+
+# Inicia o processo Mirage Service PHP
+
+# Source function library.
+if [ -f /etc/rc.d/functions ];
+then
+    . /etc/init.d/functions
+fi
+
+# Variáveis para o ambiente
+dir_php='/usr/local/apache22/cgi-bin'
+dir_manager="/usr/local/apache22/htdocs/manager"
+dir_servico="$dir_manager/servico"
+mirage_pid="$dir_servico/mirageservicephp.pid"
+miragetmp_pid="/tmp/mirageservicephp.pid"
+
+# Exportar variáveis para o ambiente
+export dir_php
+export dir_manager
+export dir_servico
+export mirage_pid
+export miragetmp_pid
+
+# Função para iniciar o Mirage
+mirage_start()
+{
+	echo $"Iniciando Mirage Service: "
+	cd "$dir_php"
+	php -f "$dir_servico/servicolinux.php5" start
+	sleep 1
+	if [ -e "$mirage_pid" ]; 	then
+		echo "Mirage Service script for Linux iniciado com sucesso"
+                exit 0
+	elif [ -e "$miragetmp_pid" ]; 	then
+		echo "Mirage Service script for Linux iniciado com sucesso"
+                exit 0
+	else
+		echo "Mirage Service nao pode ser iniciado, por favor veja $dir_manager/Logs/mirage_service.log"
+                exit 1
+	fi
+}
+
+# Função para parar o Mirage
+mirage_stop()
+{
+	echo $"Parando Mirage Service : "
+	cd "$dir_php"
+	php -f $dir_servico/servicolinux.php5 stop
+	sleep 1
+	if [ -e "$mirage_pid" ]; 	then
+		echo "Mirage Service nao pode ser parado, por favor veja $dir_manager/Logs/mirage_service.log"		
+                exit 0
+    elif [ -e "$miragetmp_pid" ]; 	then
+		echo "Mirage Service nao pode ser parado, por favor veja $dir_manager/Logs/mirage_service.log"		
+                exit 0
+	else
+		echo "Mirage Service script for Linux parado com sucesso"
+                exit 1
+	fi
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        mirage_start
+        ;;
+  stop)
+        mirage_stop
+        ;;
+  restart|reload)
+        mirage_stop
+        sleep 3
+        mirage_start
+        ;;
+  *)
+        echo $"Opcao invalida. Tente {start|stop|restart|}"
+        exit 1
+esac
